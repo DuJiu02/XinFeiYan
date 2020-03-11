@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title></title>
+		<style type="text/css">
+			*{
+				padding: 0;
+				margin: 0;
+			}
+			.news2_td3,.news2_td2{
+				font-size: 12px;
+				color: #A52A2A;
+			}
+		</style>
+		<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+
+		<script type="text/javascript">
+			$(document).ready(function(){
+			    $.get("http://api.tianapi.com/txapi/ncov/index?key=",
+			    function(data,status){
+					var news2 = data.newslist[0].news;
+					var desc2 = data.newslist[0].desc;
+					
+					$("#div1").append(
+						"<h4>"+desc2.remark1+"</h4>"+
+						"<h4>"+desc2.remark3+"</h4>"+
+						"<h4>"+desc2.remark2+"</h4>"+
+						"<h4>"+desc2.note1+"</h4>"+
+						"<h4>"+desc2.note2+"</h4>"+
+						"<h4>"+desc2.note3+"</h4>"+
+						"<h4>"+desc2.generalRemark+"</h4>"
+					);
+					
+					
+					$("#button1").click(function(){
+					$("#table1").show();
+					$("#table1 tr:gt(0)").remove();
+						for(var i=0;i<news2.length;i++){
+							$("#table1 tr:last").after(
+								"<tr>"+
+									"<td class='news2_td1'>"+news2[i].pubDateStr+"</td>"+
+									"<td class='news2_td2'>"+news2[i].title+"</td>"+
+									"<td class='news2_td3'>"+news2[i].summary+"</td>"+
+									"<td class='news2_td4'>"+news2[i].infoSource+"</td>"+
+									"<td class='news2_td5'><a href='"+news2[i].sourceUrl+"' target='_blank'>详细链接</a></td>"+
+								"</tr>"
+							);
+						};
+					});
+					
+					
+					
+					
+				// $('#result').append(JSON.stringify(data)); //返回内容绑定到ID为result的标签
+				// console.log("状态码：" + data.code + "\n消息：" + data.msg);
+			  });
+			  
+			  
+				$("#button3").click(function(){
+					var province = $("#province").val();
+					var city = $("#city").val();
+					var district = $("#district").val();
+					if(province != "" && city != "" && district != ""){
+						$.get("http://api.tianapi.com/txapi/ncovnearby/index?key=*da&province="+province+"&city="+city+"&district="+district+"",
+						function(data,status){
+						console.log(data.newslist);
+						console.log(data.newslist.length);
+						$("#table2").show();
+						$("#table2 tr:gt(0)").remove();
+							for (var i = 0; i < data.newslist.length; i++) {
+								$("#table2 tr:last").after(
+									"<tr>"+
+										"<td>"+data.newslist[i].locale+"</td>"+
+										"<td>"+data.newslist[i].address+"</td>"+
+										"<td>"+data.newslist[i].source+"</td>"+
+									"</tr>"
+								);
+							}
+						});
+					}else{
+						alert("三框不能为空");
+					}
+				  
+				});
+			  
+			});
+		</script>
+	</head>
+	<body>
+		<button type="button" id="button1">点击查看最新感染疫情</button>
+		周边疫情：
+			省份：<input type="text" id="province" value="" placeholder="广东省" required="required" size="4"/>
+			城市：<input type="text" id="city" value="" placeholder="深圳市" required="required" size="4"/>
+			区县：<input type="text" id="district" value="" placeholder="龙岗区" required="required" size="4"/>
+			<input type="button" value="查询" id="button3" class="btn btn-default"/>(如果查询三文本框不能为空)
+		<div class="div1" id="div1" style="color: #FE2E2E;">
+		</div>
+		<table class="table" id="table1" style="display: none;">
+			<tr>
+				<th width='12%'>时间</th>
+				<th width='20%'>题标</th>
+				<th>内容</th>
+				<th width='12%'>来源</th>
+				<th width='12%'>链接</th>
+			</tr>
+		</table>
+		
+		
+		
+		<table class="table" id="table2" style="display: none;">
+			<tr>
+				<th>地区</th>
+				<th>地址</th>
+				<th>来源</th>
+			</tr>
+		</table>
+		
+	</body>
+</html>
